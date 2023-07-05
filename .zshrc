@@ -110,6 +110,8 @@ alias zrc="vim ~/.zshrc"
 alias trc="vim ~/.tmux.conf"
 alias dcd="docker-compose down"
 
+alias search="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
+
 export NVM_DIR="$HOME/.nvm"
 
 
