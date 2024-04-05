@@ -126,3 +126,5 @@ export PATH="/opt/homebrew/opt/imagemagick@6/bin:$PATH"
 # Add colors to Terminal
 export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+eval "$(starship init zsh)"
