@@ -91,6 +91,14 @@ source $ZSH/oh-my-zsh.sh
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
+autoload -U edit-command-line
+
+zle -N edit-command-line
+
+bindkey '^x' edit-command-line
+
+export VISUAL='nvim'
+
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
@@ -104,25 +112,78 @@ alias gc="git commit"
 alias ga="git add"
 alias gd="git diff"
 alias gs="git status"
+alias gpm="git pull --rebase origin master"
 alias vim="nvim"
 alias nvc="nvim ~/.config/nvim/init.lua"
 alias zrc="vim ~/.zshrc"
 alias trc="vim ~/.tmux.conf"
+alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user"
+alias lg="lazygit"
 alias dcd="docker-compose down"
+alias baby="cd ~/perchwell/babylon"
+alias baby="cd ~/perchwell/babylon"
+alias babyterm="docker exec -it babylon-web /bin/bash"
+alias stagterm="tsh login --proxy=teleport.mgmt.perchwell.com
+tsh ssh ubuntu@stage-rails-console-3"
+alias babydb="psql -U app perchwell"
+alias baby="cd ~/perchwell/babylon"
+alias kubeterm="tsh login --proxy=teleport.mgmt.perchwell.com:443 teleport.mgmt.perchwell.com;tsh kube login staging"
 
 alias search="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
 
-export NVM_DIR="$HOME/.nvm"
 
 
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-eval "$(rbenv init - zsh)"
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 export PATH="/opt/homebrew/opt/imagemagick@6/bin:$PATH"
-
+export PATH="/Applications/IntelliJ IDEA CE.app/Contents/MacOS:$PATH"
 # Add colors to Terminal
 export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+eval "$(fzf --zsh)"
+eval "$(zoxide init zsh)"
+alias cd="z"
+eval "$(starship init zsh)"
+# -- Use fd instead of fzf --
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --exclude .git . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type=d --hidden --exclude .git . "$1"
+}
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+_fzf_comprun() {
+  local command=$1
+  shift
+
+  case "$command" in
+    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+    export|unset) fzf --preview "eval 'echo $'{}"         "$@" ;;
+    ssh)          fzf --preview 'dig {}'                   "$@" ;;
+    *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
+  esac
+}
+source ~/fzf-git.sh
+
+export BAT_THEME="TwoDark"
+export EDITOR="nvim"
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+eval "$(mise activate zsh)"
+export PATH="$HOME/.local/bin:$PATH"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
